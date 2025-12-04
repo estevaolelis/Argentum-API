@@ -11,7 +11,17 @@ builder.Services.AddSingleton(provider =>
     var url = config["Url"];
     var key = config["ServiceKey"];
 
-    return SupabaseConfig.Initialize(url, key);
+    var options = new Supabase.SupabaseOptions
+    {
+        AutoConnectRealtime = true,
+        AutoRefreshToken = true
+    };
+
+    var client = new Supabase.Client(url, key, options);
+
+    client.InitializeAsync().Wait();
+
+    return client;
 });
 
 // Add services to the container.
@@ -19,13 +29,18 @@ builder.Services.AddSingleton(provider =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    // Gera o JSON do Swagger
+    app.UseSwagger();
+    // Gera a Tela HTML interativa
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
