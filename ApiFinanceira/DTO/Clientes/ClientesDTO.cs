@@ -1,11 +1,12 @@
-﻿namespace ApiFinanceira.DTO.Clientes;
-
-public class ClientesDto
+﻿namespace ApiFinanceira.DTO.Clientes
 {
-    public int id { get; set; }
-    public string Nome { get; set; }
-    public string documento { get; set; }
-    public string email { get; set; }
-    public bool status { get; set; }
-    public DateTime? data_criacao { get; set; }
+    public class ClientesDto
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public string Documento { get; set; }
+        public string Email { get; set; }
+        public bool Status { get; set; }
+        public DateTime? DataCriacao { get; set; }
+    }
 }

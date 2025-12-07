@@ -1,5 +1,4 @@
 ﻿using ApiFinanceira.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiFinanceira.Controllers;
@@ -8,12 +7,10 @@ namespace ApiFinanceira.Controllers;
 [Route("api/[controller]")]
 public class ClientesController : ControllerBase
 {
-    private readonly Supabase.Client _supabase;
     private readonly ClientesService _clienteService;
 
-    public ClientesController(Supabase.Client supabase, ClientesService clienteService)
+    public ClientesController(ClientesService clienteService)
     {
-        _supabase = supabase;
         _clienteService = clienteService;
     }
 
@@ -21,14 +18,24 @@ public class ClientesController : ControllerBase
     public async Task<IActionResult> ListarUsuarios()
     {
         var listar = await _clienteService.GetClientesAsync();
+        
         return Ok(listar);
     }
     
-    [HttpPost("criar-usuarios")]
-    public async Task<IActionResult> CriarUsuarios(string nome, string documento, string email)
+    public class CriarClienteRequest
     {
-        var listar = await _clienteService.PostClientesAsync(nome, documento, email);
-        return Ok(listar);
+        public string Nome { get; set; }
+        public string Documento { get; set; }
+        public string Email { get; set; }
+    }
+
+    [HttpPost("criar-usuarios")]
+    public async Task<IActionResult> CriarUsuarios([FromBody] CriarClienteRequest request)
+    {
+        if (request == null) return BadRequest();
+        
+        var novoCliente = await _clienteService.PostClientesAsync(request.Nome, request.Documento, request.Email);
+        
+        return Ok(novoCliente);
     }
 }
-

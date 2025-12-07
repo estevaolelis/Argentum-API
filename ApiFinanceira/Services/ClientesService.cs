@@ -1,18 +1,18 @@
-﻿using ApiFinanceira.DTO.Clientes;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Supabase.Postgrest;
+﻿using Supabase.Postgrest;
+using Supabase.Postgrest.Models;
 
 namespace ApiFinanceira.Services
 {
     public class ClientesService
     {
         private readonly Supabase.Client _supabase;
+
         public ClientesService(Supabase.Client supabase)
         {
             _supabase = supabase;
         }
-
-        public async Task<ClientesDto> PostClientesAsync(string nome, string documento, string email)
+        
+        public async Task<clientes> PostClientesAsync(string nome, string documento, string email)
         {
             var novoCliente = new clientes
             {
@@ -23,36 +23,18 @@ namespace ApiFinanceira.Services
                 data_criacao = DateTime.UtcNow
             };
             
-            var response = await _supabase .From<clientes>() .Insert(novoCliente, new QueryOptions { Returning = QueryOptions.ReturnType.Representation });
-            var clienteCriado = response.Models.FirstOrDefault();
+            var response = await _supabase
+                .From<clientes>()
+                .Insert(novoCliente, new QueryOptions { Returning = QueryOptions.ReturnType.Representation });
             
-            if (clienteCriado != null)
-            {
-                return new ClientesDto()
-                {
-                    id = clienteCriado.id,
-                    Nome = clienteCriado.nome,
-                    email = clienteCriado.email,
-                    status = clienteCriado.status,
-                    data_criacao = clienteCriado.data_criacao
-                };
-            }
-
-            return null;
+            return response.Models.FirstOrDefault();
         }
-
-        public async Task<List<ClientesDto>> GetClientesAsync()
+        
+        public async Task<List<clientes>> GetClientesAsync()
         {
-            var clientesLista = await _supabase.From<clientes>().Get();
-            return clientesLista.Models.Select(c => new ClientesDto
-            {
-                id = c.id,
-                Nome = c.nome,
-                documento = c.documento,
-                email = c.email,
-                status = c.status,
-                data_criacao = c.data_criacao
-            }).ToList();
+            var response = await _supabase.From<clientes>().Get();
+            
+            return response.Models; 
         }
     }   
 }
