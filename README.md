@@ -1,4 +1,4 @@
-# 💰 ApiFinanceira
+# 💰 CrudUsuario
 
 API em .NET Core integrada ao **Supabase** (PostgreSQL), utilizando **Newtonsoft.Json** para serialização.
 
