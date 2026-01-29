@@ -1,4 +1,5 @@
-﻿using Supabase.Postgrest;
+﻿using ApiFinanceira.DTO.Exportacao;
+using Supabase.Postgrest;
 using Supabase.Postgrest.Models;
 
 namespace ApiFinanceira.Services
@@ -70,6 +71,21 @@ namespace ApiFinanceira.Services
                 .Update();
 
             return true;
+        }
+        
+        public async Task<ResultadoExportacao> ExportarClientesExcelAsync()
+        {
+            var response = await _supabase.From<clientes>().Get();
+            var dados = response.Models;
+            
+            var config = new List<CsvColunaConfiguracao<clientes>>
+            {
+                new() { Cabecalho = "Nome", Formatador = c => c.nome },
+                new() { Cabecalho = "Documento", Formatador = c => c.documento }
+            };
+            
+            var exportacaoService = new ExportacaoService();
+            return exportacaoService.ExportarPlanilha(dados, config, FormatoExportacao.xlsx);
         }
     }   
 }
